@@ -24,12 +24,20 @@ function durationText(s) {
   return `${s.duration_min} mins`;
 }
 // Photos, by service id. Only the services with a photo get one; the
-// rest stay as plain price rows. All four images are originals in
-// public/images/ (1920x1280 JPEG, no text or logos).
+// rest stay as plain price rows. All four images are originals, embedded
+// as base64 data URIs in public/images.js (optimised to 1200x800, JPEG
+// quality 70) — the GitHub push route is text-only, so the JPEG files in
+// public/images/ cannot be pushed and Vercel would serve broken images.
+// The hero <img> gets its data URI here too, on load.
+if (typeof IMAGES !== "undefined" && IMAGES.hero) {
+  const heroImg = document.getElementById("heroImg");
+  if (heroImg) heroImg.src = IMAGES.hero;
+}
 function photoFor(s) {
-  if (s.id === "hair-cut") return { src: "/images/hair-cut.jpg", alt: "Stylist trimming a woman's long hair" };
-  if (String(s.id || "").startsWith("hair-spa-")) return { src: "/images/hair-spa.jpg", alt: "Hair wash and spa treatment at the basin" };
-  if (s.id === "normal-cut") return { src: "/images/mens-cut.jpg", alt: "Barber giving a man a clipper cut" };
+  if (typeof IMAGES === "undefined") return null;
+  if (s.id === "hair-cut") return { src: IMAGES.hairCut, alt: "Stylist trimming a woman's long hair" };
+  if (String(s.id || "").startsWith("hair-spa-")) return { src: IMAGES.hairSpa, alt: "Hair wash and spa treatment at the basin" };
+  if (s.id === "normal-cut") return { src: IMAGES.mensCut, alt: "Barber giving a man a clipper cut" };
   return null;
 }
 function badgeFor(s) {
@@ -103,7 +111,7 @@ function render() {
         const photo = photoFor(s);
         return `
       <article class="price-row${photo ? " has-photo" : ""}">
-        ${photo ? `<figure class="row-photo"><img src="${photo.src}" width="1920" height="1280" loading="lazy" alt="${esc(photo.alt)}"></figure>` : ""}
+        ${photo ? `<figure class="row-photo"><img src="${photo.src}" width="1200" height="800" loading="lazy" alt="${esc(photo.alt)}"></figure>` : ""}
         <div class="row-body">
         <div class="row-head">
           <h3>${esc(s.name)}</h3>

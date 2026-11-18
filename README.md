@@ -55,18 +55,28 @@ two-pass, local notes at
 
 ## Images
 
-Four original photos in `public/images/` (all 1920×1280 JPEG, no text
-or logos, matching the bottle-green/brass palette):
+Four original photos (no text or logos, matching the bottle-green/brass
+palette), embedded as base64 data URIs in `public/images.js` as the
+`IMAGES` map (`hero`, `hairCut`, `hairSpa`, `mensCut`):
 
-- `hero.jpg` — salon interior (bottle-green walls, brass mirrors, black
+- `hero` — salon interior (bottle-green walls, brass mirrors, black
   barber chairs), in the right column of the split hero.
-- `hair-cut.jpg` — stylist trimming a woman's long hair, on the Hair Cut row.
-- `hair-spa.jpg` — hair wash/spa at the basin, on the three Hair Spa rows.
-- `mens-cut.jpg` — barber clipper cut on a man, on the Men Normal Cut row.
+- `hairCut` — stylist trimming a woman's long hair, on the Hair Cut row.
+- `hairSpa` — hair wash/spa at the basin, on the three Hair Spa rows.
+- `mensCut` — barber clipper cut on a man, on the Men Normal Cut row.
+
+Each photo was optimised to 1200×800, JPEG quality 70, before encoding
+(~384 KB of JPEG, ~500 KB as base64 in total). They are embedded rather
+than served as files because the GitHub push route used for this repo is
+text-only and rejects binary files — the JPEGs in `public/images/` are
+not in the repo, and without the data URIs the live site showed the
+hero's alt text in an empty box. The original full-size (1920×1280)
+JPEGs are still kept in `public/images/` for local use.
 
 Every image has explicit `width`/`height` and descriptive alt text; all
 but the hero are `loading="lazy"`. To swap in real salon photos, replace
-these four files with same-named JPEGs — no code change needed.
+the data URI strings in `public/images.js` — or upload JPEGs to
+`public/images/` and point the `IMAGES` map back at the file paths.
 - **Anti-default check:** no cream + terracotta, no SaaS-card kit, no
   tracked all-caps eyebrows, no middle-dot meta strings, no `→` on
   buttons. The hairline price list is subject-driven (a salon price

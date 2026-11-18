@@ -57,19 +57,30 @@ function check(cond, label) {
     check(adminPage.includes("<dialog") && adminPage.includes("deleteDialog") && adminPage.includes("reminder-list"),
       "admin page uses native dialog for deletes and hairline reminder list");
 
-    // Photos: hero in the split hero, one per service row. All four are
-    // original 1920x1280 JPEGs in public/images/, no text or logos.
-    check(home.includes("/images/hero.jpg") && home.includes('alt="Salon interior with bottle-green walls, brass mirrors and black barber chairs"'),
+    // Photos: embedded as base64 data URIs in public/images.js (the
+    // GitHub push route is text-only, so the JPEG files cannot be pushed
+    // and the live site would show broken images without this). Hero in
+    // the split hero, one per service row. All four are originals, no
+    // text or logos, optimised to 1200x800 JPEG quality 70.
+    check(home.includes("/images.js") && home.includes('id="heroImg"') && home.includes('alt="Salon interior with bottle-green walls, brass mirrors and black barber chairs"'),
       "hero photo wired in with descriptive alt text");
+    check(!home.includes("/images/hero.jpg") && !home.includes("/images/hair-cut.jpg"),
+      "no /images/*.jpg paths left in the served page");
+    const imagesJs = await (await fetch(`http://localhost:${port}/images.js`)).text();
+    for (const key of ["hero", "hairCut", "hairSpa", "mensCut"]) {
+      const m = imagesJs.match(new RegExp(`${key}: "data:image/jpeg;base64,([A-Za-z0-9+/=]+)"`));
+      check(!!m, `data URI present for ${key}`);
+      const buf = Buffer.from(m[1], "base64");
+      check(buf.length > 20000 && buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff,
+        `data URI for ${key} decodes to a valid JPEG (${buf.length} bytes)`);
+    }
     const appJs = await (await fetch(`http://localhost:${port}/app.js`)).text();
-    check(appJs.includes("/images/hair-cut.jpg") && appJs.includes("/images/hair-spa.jpg") && appJs.includes("/images/mens-cut.jpg")
+    check(appJs.includes("IMAGES.hairCut") && appJs.includes("IMAGES.hairSpa") && appJs.includes("IMAGES.mensCut") && appJs.includes("IMAGES.hero")
       && appJs.includes("Stylist trimming a woman's long hair") && appJs.includes("Hair wash and spa treatment at the basin") && appJs.includes("Barber giving a man a clipper cut")
       && appJs.includes('alt="${esc(photo.alt)}"'),
-      "service photos wired in app.js with descriptive alt text");
+      "service photos wired in app.js via IMAGES with descriptive alt text");
     for (const img of ["hero.jpg", "hair-cut.jpg", "hair-spa.jpg", "mens-cut.jpg"]) {
-      check(fs.existsSync(path.join(__dirname, "..", "public", "images", img)), `image present on disk: ${img}`);
-      const r = await fetch(`http://localhost:${port}/images/${img}`);
-      check(r.ok && (r.headers.get("content-type") || "").includes("image/jpeg"), `image served: ${img}`);
+      check(fs.existsSync(path.join(__dirname, "..", "public", "images", img)), `original image still on disk: ${img}`);
     }
 
     const before = await (await fetch(`http://localhost:${port}/api/services?gender=WOMEN&category=Hair`)).json();
