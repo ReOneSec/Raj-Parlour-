@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Salon Admin — Berhampore Salon</title>
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <h1>Salon Admin</h1>
+      <p>Berhampore Salon — bookings, reminders and the live menu.</p>
+      <p><a class="hero-admin-link" href="/">Back to the menu</a></p>
+    </div>
+  </div>
+</header>
+<main>
+  <div class="notice" id="adminWarning">
+    If ADMIN_TOKEN is set on the server, enter it below. It is stored only in
+    this browser tab (session storage) and sent as the x-admin-token header.
+  </div>
+  <section class="panel">
+    <label>Admin token <input id="adminToken" type="password" placeholder="Leave blank in local dev"></label>
+    <button id="refreshBtn" type="button" class="btn">Refresh</button>
+    <button id="addServiceBtn" type="button" class="btn btn-primary">Add a service</button>
+  </section>
+
+  <section class="stats" id="stats" aria-label="Salon stats">
+    <div class="stat"><div class="num" id="statServices">—</div><div class="label">Services on menu</div></div>
+    <div class="stat"><div class="num" id="statBookings">—</div><div class="label">Bookings</div></div>
+    <div class="stat"><div class="num" id="statQueued">—</div><div class="label">Reminders queued</div></div>
+    <div class="stat"><div class="num" id="statDue">—</div><div class="label">Due now</div></div>
+  </section>
+
+  <fieldset class="segmented three admin-tabs">
+    <legend class="visually-hidden">Admin section</legend>
+    <input type="radio" name="adminTab" id="tabServices" value="services" checked>
+    <label for="tabServices">Services</label>
+    <input type="radio" name="adminTab" id="tabBookings" value="bookings">
+    <label for="tabBookings">Bookings</label>
+    <input type="radio" name="adminTab" id="tabReminders" value="reminders">
+    <label for="tabReminders">Reminders</label>
+  </fieldset>
+
+  <section class="panel" id="panelServices">
+    <h2>Services (live menu data)</h2>
+    <div class="table-wrap" id="servicesTable"></div>
+  </section>
+
+  <section class="panel" id="panelBookings" hidden>
+    <h2>Bookings</h2>
+    <div class="table-wrap" id="bookingsTable"></div>
+  </section>
+
+  <section class="panel" id="panelReminders" hidden>
+    <h2>Notification queue</h2>
+    <p>Reminders are queued here. They are sent only once a WhatsApp / SMS provider is configured — see the README.</p>
+    <button id="processBtn" type="button" class="btn">Process due notifications now</button>
+    <div class="reminder-list" id="notificationsList"></div>
+  </section>
+</main>
+
+<!-- Delete confirmation: native <dialog>, light-dismiss fallback in admin.js -->
+<dialog id="deleteDialog" closedby="any">
+  <div class="dialog-body">
+    <h2>Delete this service?</h2>
+    <p id="deleteText">This removes the service from the menu. Bookings already made for it are not deleted.</p>
+  </div>
+  <div class="dialog-actions">
+    <form method="dialog"><button class="btn" value="cancel">Cancel</button></form>
+    <button id="confirmDeleteBtn" type="button" class="btn btn-danger">Delete service</button>
+  </div>
+</dialog>
+
+<!-- Add / edit service: native <dialog> -->
+<dialog id="serviceDialog">
+  <div class="dialog-body">
+    <h2 id="serviceDialogTitle">Add a service</h2>
+    <form id="serviceForm">
+      <label>Service ID (for edits; blank for a new service) <input id="fId"></label>
+      <label>Name <input id="fName" required></label>
+      <label>Gender
+        <select id="fGender"><option>WOMEN</option><option>MEN</option></select>
+      </label>
+      <label>Category
+        <select id="fCategory"><option>Hair</option><option>Make Up</option><option>Hands And Feet</option><option>Skin</option></select>
+      </label>
+      <label>Subcategory <input id="fSubcategory"></label>
+      <label>Price min (INR) <input id="fPriceMin" type="number"></label>
+      <label>Price max (INR) <input id="fPriceMax" type="number"></label>
+      <label>Duration min (mins) <input id="fDurMin" type="number"></label>
+      <label>Duration max (mins) <input id="fDurMax" type="number"></label>
+      <label>Level
+        <select id="fLevel"><option>Entry</option><option>Mid</option><option>Premium</option></select>
+      </label>
+      <label>Provenance
+        <select id="fProvenance"><option value="admin">admin</option><option value="verified">verified</option><option value="unverified">unverified</option></select>
+      </label>
+      <label><input id="fActive" type="checkbox" checked> Show on menu</label>
+      <div id="serviceResult" role="status"></div>
+      <div class="dialog-actions" style="padding:0">
+        <button type="button" class="btn" id="cancelServiceBtn">Cancel</button>
+        <button type="submit" class="btn btn-primary">Save service</button>
+      </div>
+    </form>
+  </div>
+</dialog>
+
+<script src="/admin.js"></script>
+</body>
+</html>

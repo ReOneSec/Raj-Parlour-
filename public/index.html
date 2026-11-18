@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Berhampore Salon — Service Menu</title>
+<meta name="description" content="Service menu for Berhampore Salon, K K Banerjee Road, Berhampore. Browse services, book an appointment, and get queued confirmation and reminders.">
+<link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<a class="skip-link" href="#menuView">Skip to the service menu</a>
+<header class="hero">
+  <div class="hero-inner">
+    <div>
+      <h1>The chair is waiting.</h1>
+    </div>
+    <div class="hero-side">
+      <p>Berhampore Salon, K K Banerjee Road, Berhampore</p>
+      <p class="next-line" id="nextAvailableText">Next available — checking…</p>
+      <p><button id="nextBookBtn" type="button" class="next-book-btn">Book the next available time</button></p>
+      <p class="hero-note">Browse services, book a visit, and we&rsquo;ll queue a confirmation and
+      reminders for you. Reminders are queued here — messages are actually sent
+      only once WhatsApp / SMS is connected by the salon.</p>
+      <p><a class="hero-admin-link" href="/admin.html">Salon admin</a></p>
+    </div>
+  </div>
+</header>
+
+<main>
+  <!-- Menu view -->
+  <div id="menuView">
+    <div class="filterbar">
+      <div class="filterbar-inner">
+        <div class="filter-row">
+          <fieldset class="segmented" id="genderFieldset">
+            <legend class="visually-hidden">Women or Men</legend>
+            <input type="radio" name="gender" id="gWomen" value="WOMEN" checked>
+            <label for="gWomen">Women</label>
+            <input type="radio" name="gender" id="gMen" value="MEN">
+            <label for="gMen">Men</label>
+          </fieldset>
+          <div class="search-wrap grow">
+            <label class="visually-hidden" for="search">Search services</label>
+            <input id="search" type="search" placeholder="Search services" autocomplete="off">
+            <label class="visually-hidden" for="sort">Sort services</label>
+            <select id="sort">
+              <option value="">Recommended</option>
+              <option value="price_asc">Price: Low to High</option>
+              <option value="price_desc">Price: High to Low</option>
+              <option value="duration_asc">Duration: Shortest First</option>
+              <option value="duration_desc">Duration: Longest First</option>
+            </select>
+          </div>
+        </div>
+        <div class="filter-row chips" id="categoryChips" role="group" aria-label="Category">
+          <button type="button" class="chip" data-category="" aria-pressed="true">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#7a2e3f" stroke-width="1.6" aria-hidden="true"><circle cx="8" cy="8" r="6"/></svg>
+            All
+          </button>
+          <button type="button" class="chip" data-category="Hair" aria-pressed="false">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#7a2e3f" stroke-width="1.6" aria-hidden="true"><circle cx="5" cy="5" r="2.4"/><circle cx="11" cy="5" r="2.4"/><path d="M6.5 7 11 13M9.5 7 5 13"/></svg>
+            Hair
+          </button>
+          <button type="button" class="chip" data-category="Make Up" aria-pressed="false">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#7a2e3f" stroke-width="1.6" aria-hidden="true"><rect x="6" y="2" width="4" height="8" rx="1"/><path d="M5 12h6M6 14h4"/></svg>
+            Make Up
+          </button>
+          <button type="button" class="chip" data-category="Hands And Feet" aria-pressed="false">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#7a2e3f" stroke-width="1.6" aria-hidden="true"><path d="M8 2v9M4 5l4-2 4 2M3 8c0 3 2 5 5 5s5-2 5-5"/></svg>
+            Hands And Feet
+          </button>
+          <button type="button" class="chip" data-category="Skin" aria-pressed="false">
+            <svg viewBox="0 0 16 16" fill="none" stroke="#7a2e3f" stroke-width="1.6" aria-hidden="true"><path d="M8 2c3 2 5 4 5 6a5 5 0 0 1-10 0c0-2 2-4 5-6Z"/></svg>
+            Skin
+          </button>
+        </div>
+        <div class="filter-row" id="levelPills" role="group" aria-label="Stylist level">
+          <button type="button" class="pill" data-level="" aria-pressed="true">All levels</button>
+          <button type="button" class="pill" data-level="Entry" aria-pressed="false">Entry</button>
+          <button type="button" class="pill" data-level="Mid" aria-pressed="false">Mid</button>
+          <button type="button" class="pill" data-level="Premium" aria-pressed="false">Premium</button>
+        </div>
+      </div>
+    </div>
+
+    <details class="provenance">
+      <summary>About prices</summary>
+      <p>Only Hair Cut is verified from the branch menu. Hair Spa prices marked
+      “unverified” come from third-party listings, not the official menu, and are
+      shown so the salon can confirm or correct them in admin. Other categories
+      are empty until the salon adds services — no prices are invented here.</p>
+    </details>
+
+    <div class="pricelist" id="pricelist">
+      <div id="empty" class="notice" hidden>No services in this selection yet. The salon can add them in admin.</div>
+      <div id="list"></div>
+    </div>
+  </div>
+
+  <!-- Booking view -->
+  <div id="bookingView" hidden>
+    <p><button type="button" class="btn btn-ghost" id="backToMenuBtn">&larr; Back to menu</button></p>
+    <div class="booking-layout">
+      <div>
+        <section class="panel">
+          <h2>Choose a date &amp; time</h2>
+          <form id="bookingForm">
+            <label>Service
+              <select id="serviceSelect" required></select>
+            </label>
+            <label>Date and time
+              <input id="appointmentAt" type="datetime-local" required>
+            </label>
+            <div class="slot-row" id="slotRow" role="group" aria-label="Suggested times"></div>
+            <button type="button" class="btn" id="nextSlotBtn">Use the next available time</button>
+          </form>
+        </section>
+        <section class="panel">
+          <h2>Your details</h2>
+          <form id="detailsForm">
+            <label>Your name <input id="custName" required autocomplete="name"></label>
+            <label>Phone <input id="custPhone" type="tel" required autocomplete="tel" placeholder="Your phone number"></label>
+            <p class="hero-note" style="color:var(--muted)">By booking, you agree to be contacted about this appointment. Messages are queued — they are sent only once the salon connects WhatsApp / SMS.</p>
+            <button type="submit" class="btn btn-primary">Confirm booking</button>
+          </form>
+        </section>
+      </div>
+      <aside class="panel summary" aria-label="Visit summary">
+        <h2>Your visit</h2>
+        <dl id="summaryList">
+          <dt>Service</dt><dd id="sumService">—</dd>
+          <dt>Price</dt><dd id="sumPrice">—</dd>
+          <dt>Duration</dt><dd id="sumDuration">—</dd>
+          <dt>When</dt><dd id="sumWhen">—</dd>
+          <dt>Name</dt><dd id="sumName">—</dd>
+        </dl>
+        <p class="total" id="sumTotal">—</p>
+      </aside>
+    </div>
+
+    <section class="panel confirm" id="confirmPanel" hidden>
+      <div class="check" aria-hidden="true">&#10003;</div>
+      <h2>Booking confirmed</h2>
+      <p id="confirmText"></p>
+      <ol class="timeline" id="confirmTimeline"></ol>
+      <p><button type="button" class="btn" id="bookAnotherBtn">Book another visit</button></p>
+    </section>
+    <div id="bookingResult" role="status"></div>
+  </div>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>
