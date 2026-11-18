@@ -12,7 +12,7 @@ const bookings = require("./api/bookings");
 const notifications = require("./api/notifications");
 const adminServices = require("./api/admin/services");
 
-const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json" };
+const MIME = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".png": "image/png", ".webp": "image/webp", ".svg": "image/svg+xml", ".ico": "image/x-icon" };
 
 function queryOf(url) {
   const q = {};

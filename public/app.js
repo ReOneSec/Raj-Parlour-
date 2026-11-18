@@ -23,6 +23,15 @@ function durationText(s) {
   if (s.duration_max && s.duration_max !== s.duration_min) return `${s.duration_min}–${s.duration_max} mins`;
   return `${s.duration_min} mins`;
 }
+// Photos, by service id. Only the services with a photo get one; the
+// rest stay as plain price rows. All four images are originals in
+// public/images/ (1920x1280 JPEG, no text or logos).
+function photoFor(s) {
+  if (s.id === "hair-cut") return { src: "/images/hair-cut.jpg", alt: "Stylist trimming a woman's long hair" };
+  if (String(s.id || "").startsWith("hair-spa-")) return { src: "/images/hair-spa.jpg", alt: "Hair wash and spa treatment at the basin" };
+  if (s.id === "normal-cut") return { src: "/images/mens-cut.jpg", alt: "Barber giving a man a clipper cut" };
+  return null;
+}
 function badgeFor(s) {
   if (s.provenance === "verified") return `<span class="badge verified">Verified menu price</span>`;
   if (s.provenance === "unverified") return `<span class="badge unverified">Unverified price — to confirm</span>`;
@@ -90,8 +99,12 @@ function render() {
   list.innerHTML = groups.map((g) => `
     <section class="price-group" aria-label="${esc(g.category)}">
       <h2>${esc(g.category)}</h2>
-      ${g.items.map((s) => `
-      <article class="price-row">
+      ${g.items.map((s) => {
+        const photo = photoFor(s);
+        return `
+      <article class="price-row${photo ? " has-photo" : ""}">
+        ${photo ? `<figure class="row-photo"><img src="${photo.src}" width="1920" height="1280" loading="lazy" alt="${esc(photo.alt)}"></figure>` : ""}
+        <div class="row-body">
         <div class="row-head">
           <h3>${esc(s.name)}</h3>
           <span class="leader" aria-hidden="true"></span>
@@ -100,7 +113,8 @@ function render() {
         <div class="row-meta">${esc(s.subcategory || "")}${s.subcategory ? " · " : ""}${esc(durationText(s))}${s.level ? ` · <span class="level">${esc(s.level)}</span>` : ""}</div>
         <div>${badgeFor(s)}</div>
         <div class="row-actions"><button type="button" class="btn btn-primary" data-book="${esc(s.id)}">Book this service</button></div>
-      </article>`).join("")}
+        </div>
+      </article>`;}).join("")}
     </section>`).join("");
   list.querySelectorAll("[data-book]").forEach((btn) => {
     btn.addEventListener("click", () => openBooking(btn.dataset.book));

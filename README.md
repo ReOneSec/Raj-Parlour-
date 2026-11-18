@@ -52,6 +52,21 @@ two-pass, local notes at
   display at weight 800 with tight tracking; prices use tabular-nums.
 - **Layout:** split hero, then the menu as an editorial price list
   (hairline rows, dotted leaders), grouped by category.
+
+## Images
+
+Four original photos in `public/images/` (all 1920×1280 JPEG, no text
+or logos, matching the bottle-green/brass palette):
+
+- `hero.jpg` — salon interior (bottle-green walls, brass mirrors, black
+  barber chairs), in the right column of the split hero.
+- `hair-cut.jpg` — stylist trimming a woman's long hair, on the Hair Cut row.
+- `hair-spa.jpg` — hair wash/spa at the basin, on the three Hair Spa rows.
+- `mens-cut.jpg` — barber clipper cut on a man, on the Men Normal Cut row.
+
+Every image has explicit `width`/`height` and descriptive alt text; all
+but the hero are `loading="lazy"`. To swap in real salon photos, replace
+these four files with same-named JPEGs — no code change needed.
 - **Anti-default check:** no cream + terracotta, no SaaS-card kit, no
   tracked all-caps eyebrows, no middle-dot meta strings, no `→` on
   buttons. The hairline price list is subject-driven (a salon price
